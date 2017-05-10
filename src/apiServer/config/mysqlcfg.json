@@ -1,0 +1,6 @@
+{
+    "mysqlAddr": "root:root@tcp(127.0.0.1:3306)/apiServer?charset=utf8",
+    "maxIdleConns": 5,
+    "maxOpenConns": 200,
+    "debug": true
+}

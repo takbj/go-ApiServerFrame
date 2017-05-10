@@ -1,0 +1,6 @@
+{
+    "address": "127.0.0.1:6377",
+	"maxPoolSize": 100,
+    "password": "",
+    "dbnum": 0
+}
