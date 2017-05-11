@@ -1,5 +1,5 @@
 @echo off
-set GOPATH=%GOPATH%;%~dp0
+rem set GOPATH=%GOPATH%;%~dp0
 set GOROOT=D:\Go
 
 set GO=D:\Go\bin\go.exe
@@ -13,12 +13,12 @@ echo version=%VERSION%
 set LDFLAGS=" -w -s -X main._VERSION_=%VERSION%"
 
 echo start install sever ...
-%GO% install -ldflags %LDFLAGS% server/twmain
+%GO% install -ldflags %LDFLAGS% apiServer/serverMain
 ::-gcflags " -N -l"
 ::%GO% install -gcflags " -N -l" ucserver/uc_main
 
 del config\\*.json /Q
-copy src\\server\\config\\*.json config
+copy src\\apiServer\\config\\*.json config\\
 echo complate
 pause
 

@@ -1,0 +1,6 @@
+{
+    "MinNameLen": 1,
+    "MaxNameLen": 10,
+    "Sex": 1,
+    "Age": 1
+}

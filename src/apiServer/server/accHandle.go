@@ -1,9 +1,9 @@
-package apiServer
+package server
 
 import (
 	"misc/mylog"
 	"net/http"
-	"server/gdb"
+	"apiServer/gdb"
 )
 
 //响应client登陆请求
@@ -16,16 +16,14 @@ func onAuthHandle(req *http.Request, tokenData *TokenData, data interface{}) (co
 	reqData := data.(*tReqAuthType)
 
 	//获取帐号数据，没有就创建帐号及用户
-	var exist bool
 	tokenData = &TokenData{}
-	if exist, tokenData.Acc, err = gdb.GetAccout(reqData.UserName, reqData.Password); !exist {
-		tokenData.Acc, tokenData.User, err = createAccAndUser(channel, reqData.ThreeRdToken, openid, Area, Longitude, Latitude, req, reqData.ThreeRdExInfo)
+	if tokenData.Acc, err = gdb.GetAccout(reqData.UserName, reqData.Password); err == nil && tokenData.Acc==nil {
+		tokenData.Acc, tokenData.User, err = createAccAndUser(reqData.UserName, reqData.Password, req)
 	}
 	if err != nil {
 		mylog.Error(err)
 		return RET_CODE_ServerErr, nil, nil
 	}
-	tokenData.Acc.Set3RdToken(reqData.ThreeRdToken)
 
 	loginNotify := true
 	if tokenData.Acc.LastToken != "" {

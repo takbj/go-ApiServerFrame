@@ -27,8 +27,8 @@ type DBAccount struct {
 
 func NewAccount(accName, accPwd, ipStr string) (acc *DBAccount, err error) {
 	acc = &DBAccount{
-		AccName:       channel,
-		Password:      openId,
+		AccName:       accName,
+		Password:      accPwd,
 		RegisterIP:    ipStr,
 		RegisterTime:  time.Now().Unix(),
 	}
@@ -49,6 +49,37 @@ func GetAccout(accName, accPwd string) (acc *DBAccount, err error) {
 	}
 
 	return acc, nil
+}
+
+func (acc *DBAccount) UpdateInfo(key string, newValue interface{}, needCheck bool) (err error) {
+	userValue := reflect.ValueOf(acc).Elem()
+
+	fieldType, exist := userValue.Type().FieldByName(key)
+	if !exist {
+		return fmt.Errorf("unknow field:%v\n", key)
+	}
+
+	field := userValue.FieldByName(key)
+	if !field.IsValid() {
+		return fmt.Errorf("unknow field:%v", key)
+	}
+
+	if needCheck {
+		canUpdate := fieldType.Tag.Get("canUpdate")
+		if canUpdate != "1" {
+			return fmt.Errorf("this field:%v can't set!", key)
+		}
+	}
+
+	valueInterface, ok := utils.Convert(newValue, field.Type())
+	if !ok {
+		return fmt.Errorf("cant set value %v(type=%v) to field:%v, expect:%v !", newValue, reflect.ValueOf(newValue).Type(), key, field.Type())
+	}
+	field.Set(valueInterface)
+
+	UpdateTableAttrByPk(ConstAccountTableName, acc.AccId, orm.Params{key: newValue})
+
+	return nil
 }
 
 //自定义表名

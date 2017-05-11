@@ -1,18 +1,15 @@
-package UserCenter
+package server
 
 import (
 	"encoding/gob"
 	"fmt"
 	"net/http"
-	"time"
 
-	"github.com/astaxie/beego/orm"
 
 	"modle/session"
-	"modle/utils"
 	"misc/mylog"
-	"server/config"
-	"server/gdb"
+	// "apiServer/config"
+	"apiServer/gdb"
 )
 
 type RETCODE int
@@ -36,14 +33,14 @@ type TokenData struct {
 	SessStore session.Store
 }
 
-func createAccAndUser(accName, password, string, req *http.Request) (acc *gdb.DBAccount, user *gdb.DBUser, err error) {
+func createAccAndUser(accName, password string, req *http.Request) (acc *gdb.DBAccount, user *gdb.DBUser, err error) {
 	ip := getIpFromRequest(req)
 
-	if acc, err = gdb.NewAccount(accName, password); err != nil {
+	if acc, err = gdb.NewAccount(accName, password, ip); err != nil {
 		return nil, nil, err
 	}
 
-	if user, err = gdb.NewUser(acc.AccId, ip); err != nil {
+	if user, err = gdb.NewUser(acc.AccId); err != nil {
 		return nil, nil, err
 	}
 
@@ -65,7 +62,6 @@ func initSession(provideName string, cf *session.ManagerConfig, a_onTimeOutCallB
 	gob.Register(&TokenData{})
 	gob.Register(&gdb.DBAccount{})
 	gob.Register(&gdb.DBUser{})
-	gob.Register(&qtree.Point{})
 
 	globalSessions, _ = session.NewManager(provideName, cf, a_onTimeOutCallBack)
 	go globalSessions.GC()
@@ -84,9 +80,6 @@ func getSession(token string) (*TokenData, bool) {
 	}
 	if v := tokenData.SessStore.Get("user"); v != nil {
 		tokenData.User = v.(*gdb.DBUser)
-	}
-	if v := tokenData.SessStore.Get("sceneNode"); v != nil {
-		tokenData.SceneNode = v.(*qtree.Point)
 	}
 
 	return tokenData, true
@@ -114,19 +107,10 @@ func onLogin(tokenData *TokenData) {
 	}
 	tokenData.SessStore = store
 	tokenData.Token = tokenData.SessStore.SessionID()
-	tokenData.SceneNode = qtree.NewPoint(tokenData.Acc.LastLongitude, tokenData.Acc.LastLatitude, tokenData.Token)
-	Scene.Insert(tokenData.SceneNode)
 	tokenData.Acc.UpdateInfo("LastToken", tokenData.Token, false)
-
-	if config.DEBUG_FLAG {
-		fmt.Printf("....111 onLogin,user=%v\n", tokenData.User.UserId)
-	}
 }
 
 func onLogout(tokenData *TokenData) {
-	if tokenData.SceneNode != nil {
-		Scene.Remove(tokenData.SceneNode)
-	}
 	if tokenData.Acc != nil {
 		tokenData.Acc.UpdateInfo("LastToken", "", false)
 	}

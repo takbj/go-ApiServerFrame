@@ -3,10 +3,10 @@ package gdb
 import (
 	"fmt"
 	"reflect"
-	"time"
+	// "time"
 
 	"modle/utils"
-	"server/config"
+	"apiServer/config"
 
 	"github.com/astaxie/beego/orm"
 	"misc/mylog"
@@ -30,11 +30,9 @@ func NewUser(accId int64) (user *DBUser, err error) {
 		}
 	}()
 
-	now := time.Now().Unix()
 	cfg := config.C_UserCfg
 	user = &DBUser{
 		AccId:      accId,
-		Sex:        sex,
 		Age:        cfg.Age,
 	}
 	if user.Sex == 0 {

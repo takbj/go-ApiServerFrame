@@ -10,7 +10,6 @@ import (
 const (
 	ConstAccountTableName  string = "account"
 	ConstUserTableName     string = "user"
-	ConstRelationTableName string = "relations"
 )
 
 //根据指定表的主键修改属性字段

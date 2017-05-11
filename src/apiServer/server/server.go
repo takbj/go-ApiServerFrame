@@ -1,4 +1,4 @@
-package apiServer
+package server
 
 import (
 	"fmt"
@@ -9,12 +9,12 @@ import (
 	"net/http"
 
 	"misc/mylog"
-	"misc/json"
+	"golib/json"
 	"modle/session"
 	_ "modle/session/redis"
 	"modle/utils"
-	"server/config"
-	"server/gdb"
+	"apiServer/config"
+	"apiServer/gdb"
 )
 
 type procCallBack func(req *http.Request, tokenData *TokenData, data interface{}) (code RETCODE, retsult interface{}, err error)

@@ -21,25 +21,3 @@ type UserCfg struct {
 func init(){
 	registerCfg("user", "config/UserCfg.json",	&C_UserCfg)
 }
-
-
-// func init() {
-// 	//	fmt.Println("===config.init===")
-// 	if err := ReloadUserCfg(); err != nil {
-// 		os.Exit(-1)
-// 	}
-// 	registerCfg("User", "config/UserCfg.json", &UserCfg{})
-// }
-
-// func ReloadUserCfg() error {
-// 	tmpCfg := UserCfg{}
-// 	err := ReloadCfg("config/UserCfg.json", &tmpCfg)
-// 	if err != nil {
-// 		mylog.Error("server start error:ExCfg json file read failed,", err)
-// 		fmt.Println("server start error:ExCfg json file read failed,", err)
-// 	}else{
-// 		C_ExCfg = tmpCfg
-// 	}
-
-// 	return err
-// }
